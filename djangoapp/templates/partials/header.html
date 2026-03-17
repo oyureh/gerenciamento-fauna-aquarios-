@@ -1,0 +1,107 @@
+{% load static %}
+<style>
+    /* METODOLOGIA BEM: HEADER */
+    .header {
+        background-color: #fff;
+        padding: 20px 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        /* Sombra suave para profundidade */
+    }
+
+    .header__nav {
+        display: flex;
+        /* Flexbox para alinhar itens de navegação */
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .header__logo {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #4a4a4a;
+        text-decoration: none;
+    }
+
+    .nav__list {
+        list-style: none;
+        display: flex;
+        /* Flexbox para alinhar os itens do menu em linha */
+        gap: 25px;
+        /* Espaço entre os links */
+    }
+
+    .nav__link {
+        text-decoration: none;
+        color: #555;
+        font-weight: 600;
+        transition: color 0.3s ease;
+        /* Transição suave na cor */
+    }
+
+    .nav__link:hover {
+        color: #007bff;
+        /* Cor de destaque ao passar o mouse */
+    }
+
+    .no-btn{
+        border: none;
+        outline: none;
+        background-color: transparent;
+    }
+
+    /* MEDIA QUERIES PARA RESPONSIVIDADE EM TELAS PEQUENAS */
+    @media (max-width: 768px) {
+        .header__nav {
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .nav__list {
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+    }
+</style>
+<header class="header">
+    <div class="container">
+        <nav class="header__nav">
+            <a href="{% url 'home:home' %}" class="header__logo">
+                <img src="{% static 'imgs/logo_acqua-removebg-preview.png' %}" alt="" width="75px" height="75px">
+            </a>
+            <ul class="nav__list">
+                {% if user.is_superuser %}
+                    <li><a href="/admin/" class="nav__link">Administrador </a></li>
+                {% endif %}               
+                <li><a href="{% url 'animais:list_animais' %}" class="nav__link">Animais</a></li>
+                <li><a href="{% url 'documentos:lista_documentos' %}" class="nav__link">Documentos</a></li>
+                <li><a href="{% url 'animais:dashboard' %}" class="nav__link">Tanques</a></li>
+
+                <div class="dropdown">
+                    <button style="padding: 0px 15px;" class="dropdown-toggle btn btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                            <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+                        </svg>
+                        <span class="nome-user"> {{request.user}} </span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        {% if user.is_superuser %}
+                            <li><a class="dropdown-item" href="{% url 'documentos:enviar_documentos' %}">Enviar Documentos</a></li>
+                        {% endif %}
+                        <li>
+                            <form class="dropdown-item" action="{% url 'login:logout' %}" method="post">
+                                {% csrf_token %}
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-left" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M6 12.5a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v2a.5.5 0 0 1-1 0v-2A1.5 1.5 0 0 1 6.5 2h8A1.5 1.5 0 0 1 16 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 5 12.5v-2a.5.5 0 0 1 1 0z"/>
+                                    <path fill-rule="evenodd" d="M.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L1.707 7.5H10.5a.5.5 0 0 1 0 1H1.707l2.147 2.146a.5.5 0 0 1-.708.708z"/>
+                                </svg>
+                                <button class="btn_logout no-btn">Sair</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </ul>
+        </nav>
+    </div>
+</header>

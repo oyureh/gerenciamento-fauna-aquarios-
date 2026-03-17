@@ -1,0 +1,196 @@
+{% extends "partials/base.html" %}
+
+{% block content %}
+    <style>
+    .page-header {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+    </style>
+
+    <div class="container py-5">
+
+        {# --- CABEÇALHO --- #}
+        <div class="page-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div>
+                <h1 class="fw-bold text-dark mb-1">Gestão de Tanques</h1>
+                <p class="text-muted mb-0">Monitore a população e saúde dos seus tanques</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{% url 'animais:Excel_tanque' %}?q={{request.GET.q}}" class="btn btn-outline-success fw-medium shadow-sm d-flex align-items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-spreadsheet-fill" viewBox="0 0 16 16">
+                        <path d="M6 12v-2h3v2z"/>
+                        <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0M9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1M3 9h10v1h-3v2h3v1h-3v2H9v-2H6v2H5v-2H3v-1h2v-2H3z"/>
+                    </svg> 
+                    Exportar
+                </a>
+                {% if user.is_superuser %}
+                <a href="{% url 'animais:create_tanque' %}" class="btn btn-primary fw-medium shadow-sm d-flex align-items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+                    </svg> 
+                    Novo Tanque
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        
+
+        {# --- 2. FORMULÁRIO DE BUSCA --- #}
+        <div class="row mb-4 w-100">
+            <div class="col-12 col-lg-8">
+                <form method="get" class="d-flex gap-2">
+                    {# preserva filtros extras #}
+                    {% for key, value in request.GET.items %}
+                        {% if key != 'q' and key != 'page' %}
+                            <input type="hidden" name="{{ key }}" value="{{ value }}">
+                        {% endif %}
+                    {% endfor %}
+
+                    <div class="input-group shadow-sm">
+                        <span class="input-group-text bg-primary border-end-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#fff" class="bi bi-search" viewBox="0 0 16 16">
+                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                            </svg>
+                        </span>
+                        <input type="search" name="q" class="form-control border-start-0 px-2" 
+                               placeholder="Buscar por nome ou tipo de tanque..."
+                               value="{{ request.GET.q|default:'' }}" autocomplete="off">
+                    </div>
+
+                    <div class="col-lg-3 d-flex gap-2">
+                        <button type="submit" class="btn btn-dark w-100">Filtrar</button>
+                        <a href="{{ request.path }}" class="btn btn-light border d-flex justify-content-center align-items-center" title="Limpar Filtros">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {# --- 3. TABELA DE DADOS --- #}
+        <div class="card shadow-sm border-0 overflow-hidden">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4 py-3 text-uppercase small fw-bold text-secondary">Identificação</th>
+                                <th class="py-3 text-uppercase small fw-bold text-secondary">Configuração</th>
+                                <th class="py-3 text-uppercase small fw-bold text-secondary text-center">Capacidade</th>
+                                <th class="pe-4 py-3 text-uppercase small fw-bold text-secondary text-end">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for tanque in object_list %}
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle bg-primary bg-opacity-10 p-2 me-3">
+                                            <i class="bi bi-box text-primary"></i>
+                                        </div>
+                                        <div>
+                                            <span class="fw-bold d-block text-dark">{{ tanque.nome }}</span>
+                                            <span class="text-muted small">ID: #{{ tanque.id }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if tanque.tipo == 'SALGADA' %}
+                                        <span class="badge rounded-pill bg-info text-dark">
+                                            <i class="bi bi-droplet-fill me-1"></i>Água Salgada
+                                        </span>
+                                    {% elif tanque.tipo == 'DOCE' %}
+                                        <span class="badge rounded-pill bg-primary">
+                                            <i class="bi bi-droplet me-1"></i>Água Doce
+                                        </span>
+                                    {% else %}
+                                        <span class="badge rounded-pill bg-secondary">{{ tanque.tipo }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    <span class="text-muted small fw-medium">{{ tanque.volume_litros }} Litros</span>
+                                </td>
+                                <td class="pe-4 text-end">
+                                    <div class="btn-group shadow-sm">
+                                        <a href="{% url 'animais:list_animais_tanque_especifico' pk=tanque.id %}" 
+                                           class="btn btn-sm btn-white border" title="Ver Animais">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                                                <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
+                                                <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
+                                            </svg>
+                                        </a>
+                                        
+                                        {% if user.is_superuser %}
+                                        <a href="{% url 'animais:create_animais' pk=tanque.id %}" 
+                                           class="btn btn-sm btn-white border" title="Adicionar Animal">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
+                                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+                                            </svg>
+                                        </a>
+                                        <a href="{% url 'animais:update_tanque' pk=tanque.id %}" 
+                                           class="btn btn-sm btn-white border" title="Editar">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                                <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                                            </svg>
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-white border" 
+                                                data-bs-toggle="modal" data-bs-target="#deleteModal{{tanque.id}}" title="Excluir">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                                                <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                                            </svg>
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+
+                            {# --- MODAL DE DELEÇÃO (ESTILIZADO) --- #}
+                            {% if user.is_superuser %}
+                            <div class="modal fade" id="deleteModal{{tanque.id}}" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content border-0 shadow-lg">
+                                        <div class="modal-header bg-danger text-white border-0">
+                                            <h5 class="modal-title fw-bold">Confirmar Exclusão</h5>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body text-center p-4">
+                                            <i class="bi bi-exclamation-octagon text-danger display-4 mb-3 d-block"></i>
+                                            <p class="mb-0">Deseja realmente excluir o tanque <strong>{{ tanque.nome }}</strong>?</p>
+                                            <p class="text-muted small">Esta ação pode afetar os animais vinculados a este tanque.</p>
+                                        </div>
+                                        <div class="modal-footer border-0 bg-light p-3">
+                                            <form method="post" action="{% url 'animais:delete_tanque' pk=tanque.id %}">
+                                                {% csrf_token %}
+                                                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Cancelar</button>
+                                                <button type="submit" class="btn btn-danger px-4">Sim, Deletar</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center py-5">
+                                    <i class="bi bi-inbox text-muted display-4 d-block mb-3"></i>
+                                    <span class="text-muted">Nenhum tanque encontrado para esta busca.</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

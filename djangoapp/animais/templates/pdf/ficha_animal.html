@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page {
+            size: A4;
+            margin: 1.5cm;
+            @bottom-right {
+                content: "Página " counter(page) " de " counter(pages);
+                font-family: 'Arial', sans-serif;
+                font-size: 10pt;
+                color: #666;
+            }
+            @bottom-left {
+                content: "Emitido em: {{ data_emissao|date:'d/m/Y H:i' }}";
+                font-family: 'Arial', sans-serif;
+                font-size: 10pt;
+                color: #666;
+            }
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            line-height: 1.4;
+        }
+
+        /* --- HEADER --- */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid #2563eb;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .clinica-info {
+            width: 30%;
+            font-size: 10pt;
+        }
+
+        .titulo-central {
+            width: 40%;
+            text-align: center;
+        }
+
+        .titulo-central h1 {
+            margin: 0;
+            color: #2563eb;
+            text-transform: uppercase;
+            font-size: 18pt;
+        }
+
+        .logo-placeholder {
+            width: 30%;
+            text-align: right;
+        }
+
+        .logo-placeholder img {
+            max-height: 80px;
+        }
+
+        /* --- SEÇÕES --- */
+        .section-title {
+            background-color: #f1f5f9;
+            padding: 8px 12px;
+            font-weight: bold;
+            color: #1e293b;
+            border-left: 5px solid #2563eb;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-size: 11pt;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .info-box {
+            padding: 5px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .label {
+            font-weight: bold;
+            font-size: 9pt;
+            color: #64748b;
+            display: block;
+        }
+
+        .value {
+            font-size: 11pt;
+        }
+
+        /* --- OBSERVAÇÕES E ASSINATURA --- */
+        .notas {
+            min-height: 150px;
+            border: 1px solid #e2e8f0;
+            padding: 10px;
+            font-size: 10pt;
+            background-color: #fafafa;
+        }
+
+        .assinatura-area {
+            margin-top: 50px;
+            text-align: center;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .assinatura-box {
+            border-top: 1px solid #333;
+            width: 200px;
+            padding-top: 5px;
+            font-size: 9pt;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="clinica-info">
+            <strong>Sua Clínica Vet</strong><br>
+            CNPJ: 00.000.000/0001-00<br>
+            Contato: (13) 9999-9999<br>
+            Guarujá - SP
+        </div>
+        
+        <div class="titulo-central">
+            <h1>Ficha Médica</h1>
+            <small>Protocolo: #{{ animal.id }}</small>
+        </div>
+
+        <div class="logo-placeholder">
+            {% if logo_clinica %}
+                <img src="" alt="Logo">
+            {% else %}
+                <div style="border: 1px dashed #ccc; padding: 10px; font-size: 8pt;">Logo da Clínica</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="section-title">Dados do Animal</div>
+    <div class="info-grid">
+        <div class="info-box"><span class="label">NOME COMUM</span><span class="value">{{ animal.nome_comum }}</span></div>
+        <div class="info-box"><span class="label">ESPÉCIE/HABITAT</span><span class="value">{{ animal.habitat_natural|default:"Não informado" }}</span></div>
+        <div class="info-box"><span class="label">GÊNERO</span><span class="value">{{ animal.genero }}</span></div>
+        <div class="info-box"><span class="label">TANQUE</span><span class="value">{{ animal.tanque.nome }}</span></div>
+        <div class="info-box"><span class="label">STATUS</span><span class="value">{% if animal.obito %}ÓBITO{% else %}ATIVO{% endif %}</span></div>
+        <div class="info-box"><span class="label">TIPO SANGUÍNEO</span><span class="value">{{ animal.tipo_sanguineo|default:"N/A" }}</span></div>
+    </div>
+
+    <div class="section-title">Alimentação e Dieta</div>
+    <div class="info-box w-100">
+        <span class="value">{{ animal.alimentacao|default:"Dieta padrão não registrada." }}</span>
+    </div>
+
+    <div class="section-title">Histórico e Observações</div>
+    <div class="notas">
+        {{ animal.observacoes|linebreaks }}
+    </div>
+
+    <div class="assinatura-area">
+        <div class="assinatura-box">
+            Responsável Técnico<br>
+            CRMV-SP
+        </div>
+
+    </div>
+
+</body>
+</html>

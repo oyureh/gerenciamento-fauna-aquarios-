@@ -1,0 +1,163 @@
+{% extends "partials/base.html" %}
+{% block extra_css %}
+<style>
+    /* CSS RESET SIMPLES E CONFIGURAÇÕES GLOBAIS */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background-color: #f4f4f9;
+        /* Fundo suave */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+
+    /* METODOLOGIA BEM: SEÇÃO HERÓI */
+    .section-hero {
+        text-align: center;
+        padding: 100px 20px;
+        background-color: #e2e8f0;
+        background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+
+    .section-hero__title {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: #1a202c;
+    }
+
+    .section-hero__subtitle {
+        font-size: 1.2rem;
+        color: #4a5568;
+        margin-bottom: 30px;
+    }
+
+    .section-hero__cta {
+        background-color: #007bff;
+        color: #fff;
+        padding: 12px 30px;
+        text-decoration: none;
+        font-weight: 600;
+        border-radius: 50px;
+        /* Cantos arredondados */
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: inline-block;
+    }
+
+    .section-hero__cta:hover {
+        transform: translateY(-3px);
+        /* Efeito de elevação sutil */
+        box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+    }
+
+    /* METODOLOGIA BEM: SEÇÃO DE CARDS (EXEMPLO DE GRID) */
+
+    .container-cards{
+        width: 100%;
+        padding: 40px;
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .card {
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        text-align: center;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .card__title {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+        color: #2c3e50;
+    }
+
+    .card__text {
+        color: #5b6768;
+        font-size: 1.2rem;
+        font-weight: 900;
+    }
+
+    /* METODOLOGIA BEM: FOOTER */
+    .footer {
+        background-color: #2c3e50;
+        color: #ecf0f1;
+        text-align: center;
+        padding: 40px 0;
+    }
+
+    .footer__copy {
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock extra_css %}
+{% block content %}
+<section class="section-hero">
+    <div class="container">
+        <h1 class="section-hero__title">ACQUAMUNDO</h1>
+        <p class="section-hero__subtitle">
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Excepturi maiores voluptatem corporis
+            repudiandae placeat
+            consequatur harum rerum unde sapiente quasi reiciendis, dolore animi molestiae eos. Illum optio ipsa
+            quibusdam
+        </p>
+        <a href="#servicos" class="section-hero__cta">Comece Agora</a>
+    </div>
+</section>
+
+<section class="section-cards">
+    <div class="container-cards">
+        <div class="card">
+            <h3 class="card__title">Total Animais</h3>
+            <p class="card__text">
+                {{ total_tanques }}
+            </p>
+        </div>
+
+        <div class="card">
+            <h3 class="card__title">Animais vivos</h3>
+            <p class="card__text">
+                {{ animais_vivos }}
+            </p>
+        </div>
+
+        <div class="card">
+            <h3 class="card__title">Animais mortos</h3>
+            <p class="card__text">
+                {{ animais_mortos }}
+            </p>
+        </div>
+
+        <div class="card">
+            <h3 class="card__title">Documentos Totais</h3>
+            <p class="card__text">
+                {{ documento_total }}
+            </p>
+        </div>
+    </div>
+</section>
+{% endblock content %}

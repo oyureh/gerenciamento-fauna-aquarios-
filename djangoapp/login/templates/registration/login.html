@@ -1,0 +1,120 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/login.css'%}">
+    <link rel="shortcut icon" href="{% static 'global/imgs/62941cardfilebox_109271.ico' %}" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <title>login</title>
+    <style>
+        #bodyLogin{
+            background-image: url({% static 'imgs/fundo_login.webp' %});
+        }
+
+        .overlay {
+            background-image: url({% static 'imgs/login.jpg' %});
+        }
+    </style>
+</head>
+<body id="bodyLogin">
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert-django {{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
+    <!-- login para mobile -->
+            <div id="formulario">
+                <img class="logo" src="{% static 'imgs/logo_acqua-removebg-preview.png' %}" alt="Logo acqua">
+                
+                <form class="form-responsive" action="" method="POST">
+                    <h1>Faça seu login</h1>
+                    {% csrf_token %}
+                    <label for="username" style="width: 100%; text-align: left;">User: </label>
+                    {{ form.username }}
+                    <label for="password" style="width: 100%; text-align: left;">Senha: </label>
+                    {{ form.password }}
+                    <input  class="cadastrar" type="submit" value="entrar">
+                </form>
+            </div>
+    <!-- fim login para mobile -->  
+
+    <div class="container" id="container">
+
+        <div class="form-container login-container">  
+            <img class="logo" src="{% static 'imgs/logo_acqua-removebg-preview.png' %}" alt="Logo acquamundo">  
+            <form action="" method="POST"> 
+                {% csrf_token %}
+                <h1>Faça seu login.</h1>
+                <label for="username" style="width: 100%; text-align: left;">User: </label>
+                {{ form.username }}
+                <label for="password" style="width: 100%; text-align: left;">Senha: </label>
+                {{ form.password }}
+                <input class="cadastrar"  type="submit" value="Logar">
+                <div class="pass-link">
+                </div>
+            </form>
+        </div>
+    
+        <div class="overlay-container">
+          <div class="overlay">
+                <div class="overlay-panel overlay-left">
+                <!-- <h1 class="title">Bem-vindo<br> Novamente</h1>
+                <p> Obrigado pela sua preferencia  </p> -->
+                <!-- <button class="ghost" id="login">
+                    Login
+                </button> -->
+                </div>
+
+                <div class="overlay-panel overlay-right">
+                <!-- <button class="ghost" id="register">
+                    Logar
+                </button> -->
+                </div>
+          </div>
+        </div>
+    
+    </div>
+    <script>
+        const registerButton = document.getElementById("register");
+        const loginButton = document.getElementById("login");
+        const container = document.getElementById("container");
+
+        registerButton.addEventListener("click", () => {
+        container.classList.add("right-panel-active");
+        });
+
+        loginButton.addEventListener("click", () => {
+        container.classList.remove("right-panel-active");
+        });
+
+        function toggleBotao(id) {
+            const botao = document.getElementById(id);
+            botao.classList.toggle("expanded");
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const alerts = document.getElementsByClassName('alert-django');
+            for (let i = 0; i < alerts.length; i++) {
+                setTimeout(function () {
+                    alerts[i].classList.add('show');
+                }, 100); // Pequeno delay só pra garantir que o browser aplique o estado inicial antes
+            }
+
+            // Depois de 3 segundos, iniciar o fade-out
+            setTimeout(function () {
+                for (let i = 0; i < alerts.length; i++) {
+                    alerts[i].style.opacity = '0';
+                    alerts[i].style.transform = 'translateY(-20px)';
+                    setTimeout(function () {
+                        alerts[i].style.display = 'none';
+                    }, 500); // Espera o fade-out terminar
+                }
+            }, 6000); // Tempo visível antes de começar o sumiço
+        });
+    </script>
+</body>
+</html>

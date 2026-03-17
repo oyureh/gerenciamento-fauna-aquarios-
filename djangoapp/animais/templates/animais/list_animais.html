@@ -1,0 +1,346 @@
+{% extends "partials/base.html" %}
+{% block content %}
+
+<style>
+    :root {
+        --glass-bg: rgba(255, 255, 255, 0.95);
+        --status-alive: #10b981;
+        --status-dead: #ef4444;
+    }
+
+    .page-header {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    }
+
+    .search-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        margin-top: -30px;
+        position: relative;
+        z-index: 10;
+    }
+
+    .animal-table thead th {
+        background-color: #f1f5f9;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+        color: #64748b;
+        border: none;
+    }
+
+    .status-badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .badge-alive { background: #d1fae5; color: #065f46; }
+    .badge-dead { background: #fee2e2; color: #991b1b; }
+
+    .action-btn {
+        transition: all 0.2s;
+        border-radius: 8px;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-2px);
+    }
+
+    /* Custom Radio Buttons Modernos */
+    .filter-group .btn-check:checked + .btn {
+        background-color: var(--bs-primary);
+        color: white;
+        border-color: var(--bs-primary);
+    }
+</style>
+
+<div class="container py-5">
+    
+    {# --- CABEÇALHO --- #}
+    <div class="page-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+        <div>
+            <h1 class="fw-bold text-dark mb-1">Gestão de Animais</h1>
+            <p class="text-muted mb-0">Monitore a população e saúde dos seus tanques</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'animais:Excel_animais' %}?{{ request.GET.urlencode }}" class="btn btn-outline-success d-flex align-items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-spreadsheet-fill" viewBox="0 0 16 16">
+                    <path d="M6 12v-2h3v2z"/>
+                    <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0M9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1M3 9h10v1h-3v2h3v1h-3v2H9v-2H6v2H5v-2H3v-1h2v-2H3z"/>
+                </svg>
+                Exportar Excel
+            </a>
+        </div>
+    </div>
+
+    {# --- BUSCA E FILTROS --- #}
+    <div class="search-card mb-4">
+        <form method="get" class="row g-3">
+            <div class="col-lg-5">
+                <div class="input-group bg-primary rounded-3 text-light">
+                    <span class="input-group-text bg-transparent border-end-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#fff" class="bi bi-search" viewBox="0 0 16 16">
+                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                        </svg>
+                    </span>
+                    <input type="search" name="q" class="form-control border-start-0" 
+                           placeholder="Pesquisar por nome ou tanque..." value="{{ request.GET.q|default:'' }}">
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="btn-group w-100 filter-group" role="group">
+                    <input type="radio" class="btn-check" name="status" id="todos" value="" {% if not request.GET.status %}checked{% endif %}>
+                    <label class="btn btn-outline-secondary" for="todos">Todos</label>
+
+                    <input type="radio" class="btn-check" name="status" id="vivos" value="vivos" {% if request.GET.status == "vivos" %}checked{% endif %}>
+                    <label class="btn btn-outline-secondary" for="vivos">Vivos</label>
+
+                    <input type="radio" class="btn-check" name="status" id="mortos" value="mortos" {% if request.GET.status == "mortos" %}checked{% endif %}>
+                    <label class="btn btn-outline-secondary" for="mortos">Mortos</label>
+                </div>
+            </div>
+
+            <div class="col-lg-3 d-flex gap-2">
+                <button type="submit" class="btn btn-dark w-100">Filtrar</button>
+                <a href="{{ request.path }}" class="btn btn-light border d-flex justify-content-center align-items-center" title="Limpar Filtros">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                    </svg>
+                </a>
+            </div>
+        </form>
+    </div>
+
+    {# --- TABELA --- #}
+    <div class="card border-0 shadow-sm overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover animal-table mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">Animal</th>
+                        <th>Tanque / Habitat</th>
+                        <th>Sexo</th>
+                        <th>Status</th>
+                        <th>Data Registro</th>
+                        <th class="text-end pe-4">Ações</th>
+                    </tr>
+                </thead>
+                <tbody class="border-top-0">
+                    {% for animal in object_list %}
+                    <tr>
+                        <td class="ps-4 align-middle">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm me-3 bg-light rounded text-primary d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                    <i class="bi bi-water"></i>
+                                </div>
+                                <div>
+                                    <span class="fw-bold d-block text-dark">{{ animal.nome_comum }}</span>
+                                    <small class="text-muted">ID: #{{ animal.id }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="align-middle">
+                            <span class="badge bg-soft-primary text-primary border border-primary-subtle">{{ animal.tanque.nome }}</span>
+                            <div class="small text-muted mt-1">{{ animal.habitat_natural|default:"Não informado" }}</div>
+                        </td>
+                        <td class="align-middle text-muted">{{ animal.genero }}</td>
+                        <td class="align-middle">
+                            {% if not animal.obito %}
+                                <span class="status-badge badge-alive">
+                                    <span class="spinner-grow spinner-grow-sm" role="status"></span> Ativo
+                                </span>
+                            {% else %}
+                                <span class="status-badge badge-dead">
+                                    <i class="bi bi-x-circle-fill"></i> Óbito
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="align-middle text-muted small">
+                            {{ animal.data_criacao|date:"d M Y" }}<br>
+                            {{ animal.data_criacao|date:"H:i" }}
+                        </td>
+                        <td class="align-middle text-end pe-4">
+                            <div class="d-flex justify-content-end gap-1">
+                                <a href="{% url 'animais:detail_animais' pk=animal.id %}" class="btn btn-sm btn-light border action-btn" title="Ver Detalhes">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                                        <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
+                                        <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
+                                    </svg>
+                                </a>
+                                
+                                {% if user.is_superuser %}
+                                <a href="{% url 'animais:update_animais' pk=animal.id %}" class="btn btn-sm btn-light border text-primary action-btn" title="Editar">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                        <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                        <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                                    </svg>
+                                </a>
+
+                                <!-- <form method="post" action="{% url 'animais:obito_animal' animal.pk %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm {% if not animal.obito %}btn-light border text-warning{% else %}btn-secondary{% endif %} action-btn" 
+                                        {% if animal.obito %}disabled{% endif %} title="Marcar Óbito">
+                                    </button>
+                                </form> -->
+
+                                <button type="button" class="btn btn-sm {% if not animal.obito %}btn-light border text-danger{% else %}btn-secondary{% endif %} action-btn"  data-bs-toggle="{% if not animal.obito %}modal{% endif %}" data-bs-target="{% if not animal.obito %}#modalObito{{ animal.id }}{% endif %}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-pulse" viewBox="0 0 16 16">
+                                        <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053.918 3.995.78 5.323 1.508 7H.43c-2.128-5.697 4.165-8.83 7.394-5.857q.09.083.176.171a3 3 0 0 1 .176-.17c3.23-2.974 9.522.159 7.394 5.856h-1.078c.728-1.677.59-3.005.108-3.947C13.486.878 10.4.28 8.717 2.01zM2.212 10h1.315C4.593 11.183 6.05 12.458 8 13.795c1.949-1.337 3.407-2.612 4.473-3.795h1.315c-1.265 1.566-3.14 3.25-5.788 5-2.648-1.75-4.523-3.434-5.788-5"/>
+                                        <path d="M10.464 3.314a.5.5 0 0 0-.945.049L7.921 8.956 6.464 5.314a.5.5 0 0 0-.88-.091L3.732 8H.5a.5.5 0 0 0 0 1H4a.5.5 0 0 0 .416-.223l1.473-2.209 1.647 4.118a.5.5 0 0 0 .945-.049l1.598-5.593 1.457 3.642A.5.5 0 0 0 12 9h3.5a.5.5 0 0 0 0-1h-3.162z"/>
+                                    </svg>
+                                </button>
+
+                                <button type="button" class="btn btn-sm btn-light border text-danger action-btn" 
+                                        data-bs-toggle="modal" data-bs-target="#deleteModal{{animal.id}}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                                        <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                                    </svg>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+
+                    {# --- MODAL DE DELEÇÃO (Deve ser incluído aqui ou no final do bloco) --- #}
+                        <div class="modal fade" id="deleteModal{{animal.id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteModalLabel{{animais.id}}" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                <div class="modal-header bg-danger text-white">
+                                    <h5 class="modal-title" id="deleteModalLabel{{animais.id}}">Confirmação de Deleção</h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Tem certeza que deseja deletar o Animal <strong class="text-danger">{{ animal.nome_comum }}</strong> com o ID <strong class="text-danger">{{ animal.id }}</strong>  do tanque <strong class="text-primary">{{ animais.tanque.nome }}</strong>?
+                                </div>
+                                <div class="modal-footer">
+                                    <form method="post" action="{% url 'animais:delete_animais' pk=animal.id %}">
+                                        {% csrf_token %}                               
+                                        <button type="submit" class="btn btn-danger">Sim, Deletar</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    </form>  
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    <!-- Modal para obito -->
+                    <div class="modal fade" id="modalObito{{ animal.id }}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content border-0 shadow">
+                                <div class="modal-header bg-danger text-white border-0">
+                                    <h5 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i>Confirmar Óbito</h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body p-4 text-center">
+                                    <div class="mb-3">
+                                        <i class="bi bi-droplet-half text-danger display-1"></i>
+                                    </div>
+                                    <h4>Você tem certeza?</h4>
+                                    <p class="text-muted">
+                                        Você está prestes a registrar o óbito de <strong>{{ animal.nome_comum }}</strong>. 
+                                        Esta ação atualizará o status do animal no sistema de monitoramento.
+                                    </p>
+                                    
+                                    <form method="post" action="{% url 'animais:obito_animal' animal.id %}">
+                                        {% csrf_token %}
+                                        <div class="d-grid gap-2 mt-4">
+                                            <button type="submit" class="btn btn-danger btn-lg fw-bold">Confirmar e Registrar</button>
+                                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5">
+                            <img src="" alt="Nada encontrado" style="width: 150px; opacity: 0.5">
+                            <p class="text-muted mt-3">Nenhum animal corresponde aos critérios de busca.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{# --- 4. PAGINAÇÃO --- #}
+{% if is_paginated %}
+<nav aria-label="Navegação de páginas" class="mt-4">
+    <ul class="pagination justify-content-center align-items-center gap-1">
+        
+        {# Botão Anterior #}
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link rounded-circle border-0 shadow-sm text-dark" 
+               href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.status %}status={{ request.GET.status }}&{% endif %}page={{ page_obj.previous_page_number }}" 
+               aria-label="Anterior">
+                <i class="bi bi-chevron-left"></i>
+            </a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <span class="page-link rounded-circle border-0 bg-transparent text-muted">
+                <i class="bi bi-chevron-left"></i>
+            </span>
+        </li>
+        {% endif %}
+
+        {# Números das Páginas #}
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <li class="page-item active" aria-current="page">
+                    <span class="page-link rounded-pill border-0 px-3 shadow-sm bg-primary text-white">{{ num }}</span>
+                </li>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <li class="page-item">
+                    <a class="page-link rounded-pill border-0 px-3 text-dark hover-bg-light" 
+                       href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.status %}status={{ request.GET.status }}&{% endif %}page={{ num }}">
+                        {{ num }}
+                    </a>
+                </li>
+            {% endif %}
+        {% endfor %}
+
+        {# Botão Próximo #}
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link rounded-circle border-0 shadow-sm text-dark" 
+               href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.status %}status={{ request.GET.status }}&{% endif %}page={{ page_obj.next_page_number }}" 
+               aria-label="Próximo">
+                <i class="bi bi-chevron-right"></i>
+            </a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <span class="page-link rounded-circle border-0 bg-transparent text-muted">
+                <i class="bi bi-chevron-right"></i>
+            </span>
+        </li>
+        {% endif %}
+
+    </ul>
+    <p class="text-center text-muted small mt-2">
+        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+    </p>
+</nav>
+{% endif %}
+
+
+<!-- linha 222  static 'img/empty-state.svg'  -->
+{% endblock content %}

@@ -1,0 +1,55 @@
+{% extends "partials/base.html" %}
+
+{% load static %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/create.css' %}">
+{% endblock extra_css %}
+
+{% block content %}
+    <section class="w-100 d-flex justify-content-center align-items-center my-5">
+        <form class="form-container" action="" method="post" enctype="multipart/form-data">
+            <h2>
+                {% if form.instance.pk %}
+                    Editar documento: {{ form.instance.nome_comum }}
+                {% else %}
+                    Enviar documento
+                {% endif %}
+            </h2>
+            
+            {% csrf_token %}
+            
+            <div class="inputs-row">
+                <div class="form-group-solo required">
+                    {{ form.titulo.label_tag }}
+                    {{ form.titulo }}
+                </div>
+            </div>
+            
+            <div class="inputs-row">
+                <div class="form-group required">
+                    {{ form.documento.label_tag }}
+                    {{ form.documento }}
+                </div>
+                <div class="form-group">
+                    {{ form.capa.label_tag }}
+                    {{ form.capa }}
+                </div>
+            </div>
+
+            <div class="form-group-textarea">
+                {{ form.descricao.label_tag }}
+                {{ form.descricao }}
+            </div>
+
+            
+            <div class="btn-groups" role="group" aria-label="Ações do formulário">
+                <input 
+                    type="submit" 
+                    value="{% if form.instance.pk %}Salvar Alterações{% else %}Cadastrar{% endif %}" 
+                    aria-label="{% if form.instance.pk %}Salvar alterações {% else %}Cadastrar {% endif %}"
+                >
+                <input class="text-light" type="reset" value="Voltar" aria-label="Cancelar e voltar para a lista de animais" onclick="location.href = '{% url "documentos:lista_documentos" %}' ">
+            </div>
+        </form>
+    </section>
+{% endblock content %}
