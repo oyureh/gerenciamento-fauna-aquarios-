@@ -10,11 +10,11 @@ Sistema de gerenciamento para aquários com foco em automação operacional. Ofe
   - Sqlite3
 
 # Como Instalar
-1: python -m venv venv
-2: Caso seja windows venv/Script/Activate | Caso seja linux source venv/bin/activate
-3: pip install -r requirements.txt
-4: cd djangoapp
-5: python manage.py runserver 
+- 1: python -m venv venv
+- 2: Caso seja windows venv/Script/Activate | Caso seja linux source venv/bin/activate
+- 3: pip install -r requirements.txt
+- 4: cd djangoapp
+- 5: python manage.py runserver 
    
    
 
