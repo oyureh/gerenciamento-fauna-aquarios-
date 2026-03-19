@@ -3,12 +3,13 @@ venv/
 *.zip
 
 # SQLite (banco de dados local)
-djangoapp/db.sqlite3
+/djangoapp/db.sqlite3
 *.dump
 
 # Configurações locais do servidor
-djangoapp/core/local_settings.py
+/djangoapp/core/local_settings.py
 */migrations/*.py
+
 
 # Arquivos compilados do Python
 __pycache__/
@@ -23,3 +24,7 @@ __pycache__/
 # Outros arquivos temporários
 *.log
 *.DS_Store
+
+#############
+.gitignore
+/djangoapp/manage.py
