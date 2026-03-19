@@ -173,10 +173,22 @@
                     {{ form.foto }}
                 </div>
 
-                <div class="form-group full-width">
+                <div class="form-group ">
                     <label for="{{ form.observacoes.id_for_label }}">Observações Detalhadas</label>
                     {{ form.observacoes }}
                 </div>
+
+                <div class="form-group ">
+                    <label for="{{ form.observacoes.id_for_label }}">Tratamento Clínico</label>
+                    {{ form.tratamento }}
+                </div>
+
+                {% if form.instance.obito %}
+                <div class="form-group full-width">
+                    <label for="{{ form.observacoes.id_for_label }}">Análise da necropsia</label>
+                    {{ form.necropsia }}
+                </div>
+                {% endif %}
 
                 <!-- <div class="form-group d-flex flex-row align-items-center gap-2">
                     {{ form.obito }}

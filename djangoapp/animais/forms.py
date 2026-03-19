@@ -23,6 +23,8 @@ class AnimaisForms(forms.ModelForm):
         self.fields['nome_comum'].widget.attrs['placeholder'] = 'Escreva o nome popular do animal'
         self.fields['habitat_natural'].widget.attrs['placeholder'] = 'Escreva o habitat natural do animal'
         self.fields['tanque'].widget.attrs['placeholder'] = 'Selecione o tanque ao qual o animal pertence'
-        #self.fields['tipo_sanguineo'].widget.attrs['placeholder'] = 'Digite o tipo sanguíneo do animal'
         self.fields['alimentacao'].widget.attrs['placeholder'] = 'Ex: Verduras, Carnes vermelhas, etc...'
         self.fields['observacoes'].widget.attrs['placeholder'] = 'Escreva observações desse animal, Ex: O animal tem histórico de doenças respiratorias, etc..'
+        self.fields['tratamento'].widget.attrs['placeholder'] = 'Escreva informações de como funciona o tratamento do animal.'
+        self.fields['necropsia'].widget.attrs['placeholder'] = 'Escreva informações da analíse de necropsia do animal.'
+       

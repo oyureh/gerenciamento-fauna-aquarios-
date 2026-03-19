@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.template.loader import get_template, render_to_string
 from django.core.files.base import ContentFile
 from django.conf import settings
-
+from django.contrib.staticfiles import finders
 
 #Import Bibliotecas Django
 import pandas as pd
@@ -22,6 +22,13 @@ from weasyprint import HTML
 from animais import urls
 from animais.models import TanqueModels, AnimaisModels
 from animais.forms import TanqueForms, AnimaisForms
+
+
+def _logo_b64():
+    path = finders.find('imgs/logo_acqua-removebg-preview.png')
+    with open(path, 'rb') as f:
+        data = base64.b64encode(f.read()).decode('ascii')
+    return f'data:image/png;base64,{data}'
 
 class Dashboard(LoginRequiredMixin, ListView):
     model = TanqueModels
@@ -112,8 +119,6 @@ class ListAnimais(LoginRequiredMixin, ListView):
                 Q(nome_comum__icontains=busca) |
                 Q(tanque__nome__icontains=busca) |
                 Q(tanque__data_criacao__icontains=busca)     
-            ).values(
-                'nome_comum', 'nome_cientifico', 'habitat_natural', 'tanque__nome'
             )
             
         if status == "mortos":
@@ -125,10 +130,39 @@ class ListAnimais(LoginRequiredMixin, ListView):
 class ListAnimaisTanqueEspecifico(LoginRequiredMixin, ListView):
     model = AnimaisModels
     template_name = 'animais/list_animais.html'
-    
+    context_object_name = 'animais' # Garante que o template use o nome correto
+
     def get_queryset(self):
-        tanque_id = self.kwargs.get('pk')  # Pega o pk da URL
-        return AnimaisModels.objects.filter(tanque_id=tanque_id)
+        # 1. Recupera o ID do tanque da URL
+        tanque_id = self.kwargs.get('pk')
+        
+        # 2. Começa o queryset filtrando pelo tanque
+        queryset = AnimaisModels.objects.filter(tanque_id=tanque_id)
+        
+        # 3. Recupera os parâmetros de busca da URL
+        busca = self.request.GET.get("q")
+        status = self.request.GET.get("status")
+
+        # 4. Aplica filtros de busca, se existirem
+        if busca:
+            busca = busca.strip()
+            queryset = queryset.filter(
+                Q(nome_comum__icontains=busca) |
+                Q(tanque__nome__icontains=busca) |
+                Q(tanque__data_criacao__icontains=busca)     
+            )
+            
+        # 5. Aplica filtros de status (mortos/vivos)
+        if status == "mortos":
+            queryset = queryset.filter(obito=True)
+        elif status == "vivos":
+            queryset = queryset.filter(obito=False)
+            
+        # IMPORTANTE: Removi o .values() para que o template receba OBJETOS 
+        # e não dicionários. Se você usar .values(), não conseguirá acessar 
+        # métodos do model ou campos relacionados facilmente no HTML.
+        
+        return queryset
     
 class Detailanimaisview(LoginRequiredMixin, DetailView):
     model = AnimaisModels
@@ -184,6 +218,7 @@ class FichaMedicaPDFView(DetailView):
         context = {
             'animal': animal,
             'data_emissao': datetime.datetime.now(),
+            'logo_b64': _logo_b64()
         }
 
         # 3. Renderiza o HTML para uma string
@@ -228,7 +263,6 @@ class CreateTableAnimais(LoginRequiredMixin, View):
             busca = busca.strip()
             queryset = queryset.filter(
                 Q(nome_comum__icontains=busca) |
-                Q(nome_cientifico__icontains=busca) |
                 Q(habitat_natural__icontains=busca) |
                 Q(tanque__nome__icontains=busca)
             )
@@ -239,7 +273,7 @@ class CreateTableAnimais(LoginRequiredMixin, View):
             queryset = queryset.filter(obito=False)
 
         queryset = queryset.values(
-            'nome_comum', 'nome_cientifico', 'habitat_natural', 'tanque__nome'
+            'nome_comum', 'habitat_natural', 'tanque__nome'
         )
 
         df = pd.DataFrame(list(queryset))

@@ -35,6 +35,8 @@ class AnimaisModels(models.Model):
     alimentacao     = models.CharField      (max_length=250, blank=True, null=True)
     observacoes     = models.TextField      (blank=True, null=True)
     obito           = models.BooleanField   (default=False)
+    necropsia       = models.TextField      (blank=True, null=True)
+    tratamento      = models.TextField      (blank=True, null=True)
     foto            = models.ImageField     (upload_to='fotos_clientes/', blank=True, null=True)
     genero          = models.CharField      (max_length=30,  verbose_name='Sexo', blank=True, choices=GENERO_CHOICES, default='') 
     
