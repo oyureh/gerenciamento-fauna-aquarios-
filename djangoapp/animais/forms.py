@@ -13,18 +13,49 @@ class TanqueForms(forms.ModelForm):
 class AnimaisForms(forms.ModelForm):
     class Meta:
         model = AnimaisModels
-        fields = '__all__'
-        
+        exclude = ['obito']
+
+        widgets = {
+            'data_de_nasc': forms.DateInput(
+                attrs={'type': 'date'},
+                format='%Y-%m-%d'
+            ),
+            'data_entrada': forms.DateInput(
+                attrs={'type': 'date'},
+                format='%Y-%m-%d'
+            ),
+            'genero': forms.Select(),
+        }
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field in self.fields:
-            self.fields[field].widget.attrs.update({'class':'form-control form-control-sm'})
 
-        self.fields['nome_comum'].widget.attrs['placeholder'] = 'Escreva o nome popular do animal'
-        self.fields['habitat_natural'].widget.attrs['placeholder'] = 'Escreva o habitat natural do animal'
-        self.fields['tanque'].widget.attrs['placeholder'] = 'Selecione o tanque ao qual o animal pertence'
-        self.fields['alimentacao'].widget.attrs['placeholder'] = 'Ex: Verduras, Carnes vermelhas, etc...'
-        self.fields['observacoes'].widget.attrs['placeholder'] = 'Escreva observações desse animal, Ex: O animal tem histórico de doenças respiratorias, etc..'
-        self.fields['tratamento'].widget.attrs['placeholder'] = 'Escreva informações de como funciona o tratamento do animal.'
-        self.fields['necropsia'].widget.attrs['placeholder'] = 'Escreva informações da analíse de necropsia do animal.'
+        for field in self.fields.values():
+            field.widget.attrs.update({
+                'class': 'form-control form-control-sm'
+            })
+
+        self.fields['identificacao'].widget.attrs.update({
+            'placeholder': 'Selecione a identificação do animal'
+        })
+
+        self.fields['nome'].widget.attrs.update({
+            'placeholder': 'Escreva o nome ou apelido do animal'
+        })
+
+        self.fields['alimentacao'].widget.attrs.update({
+            'placeholder': 'Ex: Verduras, carnes, ração, etc...'
+        })
+
+        self.fields['observacoes'].widget.attrs.update({
+            'placeholder': 'Observações gerais sobre o animal'
+        })
+
+        self.fields['pai'].widget.attrs.update({
+            'placeholder': 'Nome do pai (opcional)'
+        })
+
+        self.fields['mae'].widget.attrs.update({
+            'placeholder': 'Nome da mãe (opcional)'
+        })
        

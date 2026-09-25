@@ -1,55 +1,82 @@
 {% extends "partials/base.html" %}
-
 {% load static %}
+
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/create.css' %}">
+<link rel="stylesheet" href="{% static 'css/create.css' %}">
 {% endblock extra_css %}
 
 {% block content %}
-    <section class="w-100 d-flex justify-content-center align-items-center my-5">
-        <form class="form-container" action="" method="post" enctype="multipart/form-data">
+
+<section class="form-section">
+
+    <div class="modern-card">
+
+        <div class="form-header">
             <h2>
                 {% if form.instance.pk %}
-                    Editar documento: {{ form.instance.nome_comum }}
+                    ✏️ Editar Documento
                 {% else %}
-                    Enviar documento
+                    📄 Enviar Documento
                 {% endif %}
             </h2>
-            
+        </div>
+
+        <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            
-            <div class="inputs-row">
-                <div class="form-group-solo required">
-                    {{ form.titulo.label_tag }}
+
+            <div class="form-grid">
+
+                <div class="form-group full-width">
+                    <label for="{{ form.titulo.id_for_label }}">
+                        Título do Documento
+                    </label>
                     {{ form.titulo }}
                 </div>
-            </div>
-            
-            <div class="inputs-row">
-                <div class="form-group required">
-                    {{ form.documento.label_tag }}
+
+                <div class="form-group">
+                    <label for="{{ form.documento.id_for_label }}">
+                        Arquivo
+                    </label>
                     {{ form.documento }}
                 </div>
+
                 <div class="form-group">
-                    {{ form.capa.label_tag }}
+                    <label for="{{ form.capa.id_for_label }}">
+                        Capa
+                    </label>
                     {{ form.capa }}
                 </div>
+
+                <div class="form-group full-width">
+                    <label for="{{ form.descricao.id_for_label }}">
+                        Descrição
+                    </label>
+                    {{ form.descricao }}
+                </div>
+
             </div>
 
-            <div class="form-group-textarea">
-                {{ form.descricao.label_tag }}
-                {{ form.descricao }}
+            <div class="btn-container">
+
+                <a href="{% url 'documentos:lista_documentos' %}"
+                   class="btn-cancel">
+                    Cancelar
+                </a>
+
+                <button type="submit" class="btn-submit">
+                    {% if form.instance.pk %}
+                        Salvar Alterações
+                    {% else %}
+                        Enviar Documento
+                    {% endif %}
+                </button>
+
             </div>
 
-            
-            <div class="btn-groups" role="group" aria-label="Ações do formulário">
-                <input 
-                    type="submit" 
-                    value="{% if form.instance.pk %}Salvar Alterações{% else %}Cadastrar{% endif %}" 
-                    aria-label="{% if form.instance.pk %}Salvar alterações {% else %}Cadastrar {% endif %}"
-                >
-                <input class="text-light" type="reset" value="Voltar" aria-label="Cancelar e voltar para a lista de animais" onclick="location.href = '{% url "documentos:lista_documentos" %}' ">
-            </div>
         </form>
-    </section>
-{% endblock content %}
+
+    </div>
+
+</section>
+
+{% endblock %}

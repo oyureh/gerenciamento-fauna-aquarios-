@@ -1,0 +1,47 @@
+:root {
+    --glass-bg: rgba(255, 255, 255, 0.95);
+    --status-alive: #10b981;
+    --status-dead: #ef4444;
+}
+
+.page-header {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+}
+
+.search-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+    margin-top: -30px;
+    position: relative;
+    z-index: 10;
+}
+
+.list-table thead th {
+    background-color: #f1f5f9;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    border: none;
+}
+
+.action-btn {
+    transition: all 0.2s;
+    border-radius: 8px;
+}
+
+.action-btn:hover {
+    transform: translateY(-2px);
+}
+
+.filter-group .btn-check:checked + .btn {
+    background-color: var(--bs-primary);
+    color: white;
+    border-color: var(--bs-primary);
+}

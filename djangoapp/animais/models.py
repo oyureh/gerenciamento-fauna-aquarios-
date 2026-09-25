@@ -28,19 +28,29 @@ class AnimaisModels(models.Model):
         ('OUTROS','OUTROS'),
     ]
     
-    nome_comum      = models.CharField      (max_length=100, blank=False, null=False)
-    habitat_natural = models.CharField      (max_length=200, blank=True)
+    nome            = models.CharField      (max_length=100, blank=False, null=False)
     tanque          = models.ForeignKey     (TanqueModels, on_delete=models.CASCADE, blank=False, null=False)
-    data_criacao    = models.DateTimeField  (auto_now_add=True)
     alimentacao     = models.CharField      (max_length=250, blank=True, null=True)
     observacoes     = models.TextField      (blank=True, null=True)
-    obito           = models.BooleanField   (default=False)
-    necropsia       = models.TextField      (blank=True, null=True)
-    tratamento      = models.TextField      (blank=True, null=True)
-    foto            = models.ImageField     (upload_to='fotos_clientes/', blank=True, null=True)
-    genero          = models.CharField      (max_length=30,  verbose_name='Sexo', blank=True, choices=GENERO_CHOICES, default='') 
+    pai             = models.CharField      (max_length=100, blank=True, null=True)
+    mae             = models.CharField      (max_length=100, blank=True, null=True)
     
+    obito           = models.BooleanField   (default=False)
+    genero          = models.CharField      (max_length=30,  verbose_name='Sexo', blank=True, choices=GENERO_CHOICES, default='') 
+    identificacao   = models.ForeignKey     ('IdentificacaoModels', on_delete=models.CASCADE, blank=False, null=False)
+
+    data_de_nasc    =  models.DateField      (blank=True, null=True, verbose_name='Data de Nascimento')
+    data_entrada    =  models.DateField      (blank=False, null=False, verbose_name='Data de Entrada')
+    data_criacao    = models.DateTimeField  (auto_now_add=True)
+
     # Para modal
     
     def __str__(self):
-        return self.nome_comum
+        return self.nome
+    
+class IdentificacaoModels(models.Model):
+    
+    nome_identificacao = models.CharField(max_length=100, blank=False, null=False)
+    
+    def __str__(self):
+        return self.nome_identificacao

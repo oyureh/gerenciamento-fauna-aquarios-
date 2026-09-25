@@ -1,0 +1,58 @@
+<table class="table history-table align-middle">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Título</th>
+            <th>Status</th>
+            <th>Responsável</th>
+            <th>Data</th>
+            <th>Resumo</th>
+            <th class="text-end">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for tratamento in object_list %}
+        <tr>
+            <td><strong>#{{ tratamento.id }}</strong></td>
+            <td>{{ tratamento.titulo }}</td>
+            
+            <td>
+                {% if tratamento.status == 'fechada' %}
+                    <span class="status-pill pill-dead" style="font-size: 0.75rem; padding: 0.2rem 0.6rem;">Fechado</span>
+                {% else %}
+                    <span class="status-pill pill-alive" style="font-size: 0.75rem; padding: 0.2rem 0.6rem;">Aberto</span>
+                {% endif %}
+            </td>
+
+            <td>{{ tratamento.responsavel|default:"—" }}</td>
+            <td>{{ tratamento.data_tratamento|date:"d/m/Y" }}</td>
+
+            <td class="summary-column">
+                <div class="tinymce-content">
+                    {% if tratamento.descricao %}
+                        {{ tratamento.descricao|safe|truncatechars:70 }}
+                    {% else %}
+                        <p class="text-secondary mb-0">Sem descrição.</p>
+                    {% endif %}
+                </div>
+            </td>
+
+            <td class="text-end">
+                <a href="{% url 'ficha_clinica:detail_tratamento' tratamento.pk %}"
+                   class="btn btn-sm btn-outline-primary">Ver Detalhes</a>
+                
+                {% if tratamento.status != 'fechada' %}
+                <a href="{% url 'ficha_clinica:update_tratamento' pk=tratamento.pk %}"
+                   class="btn btn-sm btn-outline-primary">Editar</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="7" class="text-center py-5 text-secondary">
+                Nenhum tratamento registrado para este tanque.
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

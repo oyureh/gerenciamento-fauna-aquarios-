@@ -1,0 +1,54 @@
+.page-header {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,.05);
+}
+
+.document-card {
+    border: none;
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all .25s ease;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    height: 100%;
+}
+
+.document-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 20px rgba(0,0,0,.12);
+}
+
+.document-image {
+    height: 220px;
+    object-fit: cover;
+    background: #f8fafc;
+}
+
+.document-title {
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.document-description {
+    color: #64748b;
+    font-size: .95rem;
+}
+
+.action-btn {
+    border-radius: 8px;
+    transition: .2s;
+}
+
+.action-btn:hover {
+    transform: translateY(-2px);
+}
+
+.empty-state {
+    background: #fff;
+    border-radius: 16px;
+    padding: 3rem;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,.05);
+}

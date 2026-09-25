@@ -1,5 +1,5 @@
 # Importações de funções django
-from django.views.generic import ListView, UpdateView, DeleteView, CreateView, View, DetailView
+from django.views.generic import TemplateView, ListView, UpdateView, DeleteView, CreateView, View, DetailView
 from django.urls  import reverse_lazy
 from django.http import HttpResponse
 from django.db.models import Q
@@ -13,8 +13,6 @@ from django.contrib.staticfiles import finders
 
 #Import Bibliotecas Django
 import pandas as pd
-import base64
-import uuid
 import datetime
 from weasyprint import HTML
 
@@ -24,11 +22,6 @@ from animais.models import TanqueModels, AnimaisModels
 from animais.forms import TanqueForms, AnimaisForms
 
 
-def _logo_b64():
-    path = finders.find('imgs/logo_acqua-removebg-preview.png')
-    with open(path, 'rb') as f:
-        data = base64.b64encode(f.read()).decode('ascii')
-    return f'data:image/png;base64,{data}'
 
 class Dashboard(LoginRequiredMixin, ListView):
     model = TanqueModels
@@ -62,9 +55,9 @@ class UpdateTanque(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy('animais:dashboard')
     template_name = 'tanques/form.html'
     
-class DeleteTanque(LoginRequiredMixin, DeleteView):
-    model = TanqueModels
-    success_url = reverse_lazy('animais:dashboard')
+# class DeleteTanque(LoginRequiredMixin, DeleteView):
+#     model = TanqueModels
+#     success_url = reverse_lazy('animais:dashboard')
     
 class CreateTableView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
@@ -101,6 +94,17 @@ class CreateTableView(LoginRequiredMixin, View):
 
         return response
 
+class DetailTanque(LoginRequiredMixin, DetailView):
+    """Detail do tanque com lista de tratamentos embutida."""
+    model               = TanqueModels
+    template_name       = 'tanques/detail.html'
+    context_object_name = 'tanque'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Busca todos os tratamentos vinculados a este tanque específico
+        context['tratamentos'] = self.object.tratamentos.all().order_by('-data_tratamento', '-data_criacao')
+        return context
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
 
 class ListAnimais(LoginRequiredMixin, ListView):
@@ -169,24 +173,6 @@ class Detailanimaisview(LoginRequiredMixin, DetailView):
     template_name = 'animais/detail_animais.html'
     context_object_name = 'animal'
     
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        foto_base64 = request.POST.get('foto_base64')
-
-        if foto_base64 and ';base64,' in foto_base64:
-            # 1. Tratar a string Base64
-            format, imgstr = foto_base64.split(';base64,')
-            ext = format.split('/')[-1]
-            
-            # 2. Criar o arquivo em memória
-            nome_arquivo = f"animal_{self.object.pk}_{uuid.uuid4().hex[:8]}.{ext}"
-            data = ContentFile(base64.b64decode(imgstr), name=nome_arquivo)
-
-            # 3. Salvar no banco
-            self.object.foto = data
-            self.object.save()
-
-        return redirect('animais:detail_animais', pk=self.object.pk)
 
    
 class CreateAnimais(LoginRequiredMixin, CreateView):
@@ -201,9 +187,9 @@ class UpdateAnimais(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy('animais:list_animais')
     template_name = 'animais/form.html'
     
-class DeleteAnimais(LoginRequiredMixin, DeleteView):
-    model = AnimaisModels
-    success_url = reverse_lazy('animais:list_animais')
+# class DeleteAnimais(LoginRequiredMixin, DeleteView):
+#     model = AnimaisModels
+#     success_url = reverse_lazy('animais:list_animais')
    
 #   ++++++++++++++++++++++++++++++++++++ #
 

@@ -1,0 +1,186 @@
+{% extends "partials/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/detail.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="page-header d-flex justify-content-between align-items-center">
+        <div>
+            <nav>
+                <ol class="breadcrumb mb-2">
+                    <li class="breadcrumb-item">
+
+                        <a href="{% url 'animais:list_animais' %}">
+                            Animais
+                        </a>
+                    </li>
+
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'animais:detail_animais' ficha.animal.id %}">
+                            {{ ficha.animal.nome}}
+                        </a>
+                    </li>
+
+                    <li class="breadcrumb-item active">
+                        Ficha #{{ ficha.id }}
+                    </li>
+                </ol>
+            </nav>
+
+            <h1>
+                Ficha Clínica #{{ ficha.id }}
+            </h1>
+
+            <p class="text-muted mb-0">
+                Criada em
+                {{ ficha.data_entrada|date:"d/m/Y H:i" }}
+            </p>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a href="{% url 'ficha_clinica:update_ficha' ficha.id %}" class="btn btn-outline-primary">
+                Editar
+            </a>
+
+            <a href="javascript:history.back()" class="btn btn-light border">
+                Voltar
+            </a>
+        </div>
+    </div>
+
+    <div class="detail-grid">
+        <div class="info-card">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4>
+                    Informações da Ocorrência
+                </h4>
+
+                <span class="status-pill
+                    {% if ficha.status == 'aberta' %}
+                    pill-alive
+                    {% else %}
+                    pill-dead
+                    {% endif %}
+                    ">
+                    {{ ficha.get_status_display }}
+                </span>
+
+            </div>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">
+                        Animal
+                    </span>
+
+                    <span class="info-value">
+                        {{ ficha.animal.nome }}
+                    </span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">
+                        Tipo
+                    </span>
+
+                    <span class="info-value">
+                        {{ ficha.get_motivo_display }}
+                    </span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">
+                       Entrada
+                    </span>
+
+                    <span class="info-value">
+                        {{ ficha.data_entrada|date:"d/m/Y H:i" }}
+                    </span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">
+                        Saída
+                    </span>
+
+                    <span class="info-value">
+                        {% if ficha.data_saida %}
+                        {{ ficha.data_saida|date:"d/m/Y H:i" }}
+                        {% else %}
+                        Em andamento
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="observations-card">
+        <h5>
+            <i class="bi bi-journal-medical me-2"></i>
+            Histórico Clínico
+        </h5>
+
+        <div class="tinymce-content">
+            {% if ficha.observacoes %}
+                {{ ficha.observacoes|safe }}
+            {% else %}
+                <p class="text-secondary mb-0">
+                    Nenhum registro clínico encontrado.
+                </p>
+            {% endif %}
+        </div>
+    </div>
+
+
+    <div class="table-card mt-4">
+        <div class="table-header">
+            <h5 class="mb-0">
+                Documentos Anexados
+            </h5>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table history-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Arquivo</th>
+                        <th>Enviado em</th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for doc in ficha.documentos.all %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ doc.arquivo.name|cut:"fichas_clinicas/documentos/" }}</td>
+                            <td>{{ doc.enviado_em|date:"d/m/Y H:i" }}</td>
+                            <td class="text-end">
+                                <a href="{{ doc.arquivo.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                    Abrir
+                                </a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">
+                                Nenhum documento enviado
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

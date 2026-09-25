@@ -1,0 +1,126 @@
+<section class="history-section">
+    <div class="table-card">
+        <div class="table-header">
+            <div>
+                <h4 class="mb-1">
+                    Histórico de Fichas Clínicas
+                </h4>
+
+                <span class="text-muted small">
+                    Registros clínicos do animal
+                </span>
+            </div>
+
+            <a href="{% url 'ficha_clinica:create_ficha' animal.id %}"
+                class="btn btn-primary"> 
+                <i class="bi bi-plus-lg me-1"></i>
+                Nova Ficha
+            </a>
+        </div>
+    
+        <div class="table-responsive">
+            <table class="table history-table align-middle">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Ocorrência</th>
+                        <th>Status</th>
+                        <th>Entrada</th>
+                        <th>Saída</th>
+                        <th>Resumo</th>
+                        <th class="text-end">
+                            Ações
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for ficha in object_list %}
+                    <tr>
+                        <td>
+                            <strong>
+                                #{{ ficha.id }}
+                            </strong>
+                        </td>
+
+                        <td>
+                            {{ ficha.get_motivo_display }}
+                        </td>
+
+                        <td>
+                            <span class="badge
+                            {% if ficha.status == 'aberta' %}
+                                bg-success-subtle
+                                text-success
+                            {% else %}
+                                bg-secondary-subtle
+                                text-secondary
+                            {% endif %}
+                            ">
+                                {{ ficha.get_status_display }}
+                            </span>
+                        </td>
+
+                        <td>
+                            {{ ficha.data_entrada|date:"d/m/Y H:i" }}
+                        </td>
+
+                        <td>
+                            {% if ficha.data_saida %}
+
+                                {{ ficha.data_saida|date:"d/m/Y H:i" }}
+
+                            {% else %}
+                                <span class="text-success">
+                                    Em andamento
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <td class="summary-column">
+                             <div class="tinymce-content">
+                                {% if ficha.observacoes %}
+                                    {{ ficha.observacoes|safe|truncatechars:70  }}
+                                {% else %}
+                                    <p class="text-secondary mb-0">
+                                        Nenhum registro clínico encontrado.
+                                    </p>
+                                {% endif %}
+                            </div>
+                        </td>
+
+                        <td class="text-end">
+                            <a
+                            href="{% url 'ficha_clinica:detail_ficha' ficha.pk %}"
+                            class="btn btn-sm btn-outline-primary">
+                                Ver Detalhes
+                            </a>
+
+                            {% if ficha.status != 'fechada' %}
+                                <a
+                                    href="{% url 'ficha_clinica:update_ficha' ficha.pk %}"
+                                    class="btn btn-sm btn-outline-primary">
+                                    Editar
+                                </a>
+
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td
+                        colspan="7"
+                        class="text-center py-5">
+                            Nenhuma ficha clínica encontrada.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

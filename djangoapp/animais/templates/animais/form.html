@@ -2,207 +2,95 @@
 {% load static %}
 
 {% block extra_css %}
-<style>
-    :root {
-        --primary-color: #2563eb;
-        --secondary-bg: #f8fafc;
-        --text-main: #1e293b;
-        --border-radius: 12px;
-        --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    }
-
-    .form-section {
-        min-height: 80vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 2rem 1rem;
-        background-color: var(--secondary-bg);
-    }
-
-    .modern-card {
-        background: white;
-        width: 100%;
-        max-width: 800px;
-        padding: 2.5rem;
-        border-radius: var(--border-radius);
-        box-shadow: var(--shadow);
-    }
-
-    .form-header {
-        margin-bottom: 2rem;
-        border-bottom: 2px solid #e2e8f0;
-        padding-bottom: 1rem;
-    }
-
-    .form-header h2 {
-        color: var(--text-main);
-        font-weight: 700;
-        font-size: 1.75rem;
-    }
-
-    /* Grid Responsivo */
-    .form-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1.5rem;
-    }
-
-    @media (max-width: 768px) {
-        .form-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    .full-width {
-        grid-column: 1 / -1;
-    }
-
-    .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    .form-group label {
-        font-weight: 600;
-        color: #475569;
-        font-size: 0.9rem;
-    }
-
-    /* Estilização dos widgets do Django */
-    .form-control {
-        border: 1.5px solid #cbd5e1;
-        border-radius: 8px;
-        padding: 0.6rem 1rem;
-        transition: all 0.3s ease;
-    }
-
-    .form-control:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        outline: none;
-    }
-
-    .btn-container {
-        margin-top: 2rem;
-        display: flex;
-        gap: 1rem;
-        justify-content: flex-end;
-    }
-
-    .btn-submit {
-        background-color: var(--primary-color);
-        color: white;
-        padding: 0.75rem 2rem;
-        border: none;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: transform 0.2s;
-    }
-
-    .btn-submit:hover {
-        background-color: #1d4ed8;
-        transform: translateY(-1px);
-    }
-
-    .btn-cancel {
-        background-color: #e2e8f0;
-        color: #475569;
-        padding: 0.75rem 2rem;
-        border: none;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: 600;
-        text-align: center;
-    }
-</style>
-{% endblock extra_css %}
+<link rel="stylesheet" href="{% static 'css/create.css' %}">
+{% endblock %}
 
 {% block content %}
 <section class="form-section">
     <div class="modern-card">
+
         <div class="form-header">
             <h2>
                 {% if form.instance.pk %}
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
-                        <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.5.5 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11z"/>
-                    </svg>
-                    Editar: {{ form.instance.nome_comum }}
+                    Editar: {{ form.instance.nome }}
                 {% else %}
-                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
-                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z"/>
-                    </svg> 
                     Novo Cadastro de Animal
                 {% endif %}
             </h2>
         </div>
 
-        <form method="post" enctype="multipart/form-data">
+        <form method="post">
             {% csrf_token %}
-            
+
             <div class="form-grid">
+
                 <div class="form-group">
-                    <label for="{{ form.nome_comum.id_for_label }}">Nome Comum</label>
-                    {{ form.nome_comum }}
+                    <label>Nome</label>
+                    {{ form.nome }}
                 </div>
 
                 <div class="form-group">
-                    <label for="{{ form.genero.id_for_label }}">Sexo / Gênero</label>
+                    <label>Sexo / Gênero</label>
                     {{ form.genero }}
                 </div>
 
                 <div class="form-group">
-                    <label for="{{ form.habitat_natural.id_for_label }}">Habitat Natural</label>
-                    {{ form.habitat_natural }}
-                </div>
-
-                <div class="form-group">
-                    <label for="{{ form.tanque.id_for_label }}">Tanque de Origem</label>
+                    <label>Tanque</label>
                     {{ form.tanque }}
                 </div>
 
                 <div class="form-group">
-                    <label for="{{ form.alimentacao.id_for_label }}">Alimentação</label>
+                    <label>Alimentação</label>
                     {{ form.alimentacao }}
                 </div>
 
                 <div class="form-group">
-                    <label for="{{ form.foto.id_for_label }}">Foto do Animal</label>
-                    {{ form.foto }}
+                    <label>Pai</label>
+                    {{ form.pai }}
                 </div>
 
-                <div class="form-group ">
-                    <label for="{{ form.observacoes.id_for_label }}">Observações Detalhadas</label>
-                    {{ form.observacoes }}
+                <div class="form-group">
+                    <label>Mãe</label>
+                    {{ form.mae }}
                 </div>
 
-                <div class="form-group ">
-                    <label for="{{ form.observacoes.id_for_label }}">Tratamento Clínico</label>
-                    {{ form.tratamento }}
+                <div class="form-group">
+                    <label>Data de Nascimento</label>
+                    {{ form.data_de_nasc }}
                 </div>
 
-                {% if form.instance.obito %}
-                <div class="form-group full-width">
-                    <label for="{{ form.observacoes.id_for_label }}">Análise da necropsia</label>
-                    {{ form.necropsia }}
+                <div class="form-group">
+                    <label>Data de Entrada</label>
+                    {{ form.data_entrada }}
                 </div>
-                {% endif %}
 
-                <!-- <div class="form-group d-flex flex-row align-items-center gap-2">
-                    {{ form.obito }}
-                    <label class="mb-0" for="{{ form.obito.id_for_label }}">Registrar Óbito</label>
-                </div> -->
+                <div class="form-group">
+                    <label>Identificação</label>
+                    {{ form.identificacao }}
+                </div>
+            </div>
+
+            <div class="form-group mt-3">
+                <label>Observações</label>
+                {{ form.observacoes }}
             </div>
 
             <div class="btn-container">
-                <a href="{% url 'animais:list_animais' %}" class="btn-cancel">Cancelar</a>
+                <a href="{% url 'animais:list_animais' %}" class="btn-cancel">
+                    Cancelar
+                </a>
+
                 <button type="submit" class="btn-submit">
-                    {% if form.instance.pk %}Salvar Alterações{% else %}Confirmar Cadastro{% endif %}
+                    {% if form.instance.pk %}
+                        Salvar Alterações
+                    {% else %}
+                        Confirmar Cadastro
+                    {% endif %}
                 </button>
             </div>
+
         </form>
+
     </div>
 </section>
-{% endblock content %}
+{% endblock %}

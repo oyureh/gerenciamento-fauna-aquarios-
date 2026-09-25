@@ -16,11 +16,11 @@ urlpatterns = [
         name='update_tanque'   
     ),
     
-    path(
-        'delete/tanque/<int:pk>',
-        DeleteTanque.as_view(),
-        name='delete_tanque'   
-    ),
+    # path(
+    #     'delete/tanque/<int:pk>',
+    #     DeleteTanque.as_view(),
+    #     name='delete_tanque'   
+    # ),
     
     path(
         'create/tanque',
@@ -48,11 +48,11 @@ urlpatterns = [
         name='update_animais'   
     ),
     
-    path(
-        'delete/animais/<int:pk>',
-        DeleteAnimais.as_view(),
-        name='delete_animais'   
-    ),
+    # path(
+    #     'delete/animais/<int:pk>',
+    #     DeleteAnimais.as_view(),
+    #     name='delete_animais'   
+    # ),
     
     path(
         'create/animais/<int:pk>',
@@ -89,6 +89,12 @@ urlpatterns = [
         "ficha/medica/pdf/<int:pk>", 
         FichaMedicaPDFView.as_view(), 
         name="ficha_medica"
+    ),
+
+    path(
+        'detail/tanque/<int:pk>',
+        DetailTanque.as_view(),
+        name='detail_tanque'
     ),
 ]
  

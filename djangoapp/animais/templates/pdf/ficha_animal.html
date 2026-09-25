@@ -146,11 +146,6 @@
         <div class="info-box"><span class="label">TANQUE</span><span class="value">{{ animal.tanque.nome }}</span></div>
     </div>
 
-    <div class="section-title">Ficha Clinica de tratamento</div>
-    <div class="notas">
-        {{ animal.tratamento|default:"Ficha de tratamento não registrada." }}
-    </div>
-
     <div class="section-title">Histórico e Observações</div>
     <div class="notas">
         {{ animal.observacoes|default:"Observações não registrada." }}

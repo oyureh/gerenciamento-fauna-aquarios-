@@ -1,0 +1,105 @@
+{% extends "partials/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+    <!-- CABEÇALHO -->
+    <div class="page-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-2">
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'animais:dashboard' %}">Tanques</a>
+                    </li>
+                    <li class="breadcrumb-item active text-muted">
+                        Ficha do Tanque
+                    </li>
+                </ol>
+            </nav>
+
+            <h1>{{ tanque.nome }}</h1>
+
+            <p class="text-muted mb-0">
+                Criado em: {{ tanque.data_criacao|date:"d/m/Y H:i" }}
+            </p>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a href="{% url 'animais:update_tanque' pk=tanque.pk %}" class="btn btn-outline-secondary">
+                Editar Tanque
+            </a>
+            <a href="javascript:history.back()" class="btn btn-light border">
+                Voltar
+            </a>
+        </div>
+    </div>
+
+
+    <!-- CARD PRINCIPAL -->
+    <div class="detail-grid">
+        <div class="info-card">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="mb-0">Informações do Tanque</h4>
+                <span class="status-pill pill-alive">
+                    {{ tanque.get_tipo_display }}
+                </span>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">Volume</span>
+                    <span class="info-value">{{ tanque.volume_litros }} L</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">Temperatura</span>
+                    <span class="info-value">{{ tanque.temperatura_min }}°C – {{ tanque.temperatura_max }}°C</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">pH</span>
+                    <span class="info-value">{{ tanque.ph_min }} – {{ tanque.ph_max }}</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">Tipo de Água</span>
+                    <span class="info-value">{{ tanque.get_tipo_display }}</span>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end mt-4">
+                <a href="{% url 'animais:update_tanque' pk=tanque.pk %}" class="btn btn-outline-primary">
+                    Editar Parâmetros
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- TRATAMENTOS -->
+    <section class="history-section">
+        <div class="table-card">
+            <div class="table-header">
+                <div>
+                    <h4 class="mb-1">Histórico de Tratamentos</h4>
+                    <span class="text-muted small">Registros de manutenção e cuidados do tanque</span>
+                </div>
+                <a href="{% url 'ficha_clinica:create_tratamento' tanque.pk %}" class="btn btn-primary">
+                    Novo Tratamento
+                </a>
+            </div>
+
+            <div class="table-responsive">
+                {% include "tanque/list_ficha_tanque.html" with object_list=tratamentos %}
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+

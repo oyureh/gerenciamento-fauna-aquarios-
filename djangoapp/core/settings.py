@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'documentos',
     'home',
     'axes',
+    'ficha_clinica',
+    'tinymce',
 ]
 
 MIDDLEWARE = [
@@ -111,7 +113,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'pt-br'
 
 TIME_ZONE = 'UTC'
 
@@ -151,3 +153,25 @@ AXES_FAILURE_LIMIT = 3
 AXES_LOCK_OUT_AT_FAILURE = False
 AXES_LOCKOUT_PARAMETERS = ['username', 'ip_address', 'user_agent'] 
 AXES_CACHE = 'axes_cache'
+
+#tinymce
+TINYMCE_DEFAULT_CONFIG = {
+    'height': 400,
+    'width': '100%',
+    'menubar': True,
+
+    'plugins': (
+        'advlist autolink lists link image charmap preview '
+        'anchor searchreplace visualblocks code '
+        'fullscreen insertdatetime media table '
+        'help wordcount'
+    ),
+
+    'toolbar': (
+        'undo redo | formatselect | '
+        'bold italic underline | '
+        'alignleft aligncenter alignright | '
+        'bullist numlist | '
+        'link image | code fullscreen'
+    ),
+}

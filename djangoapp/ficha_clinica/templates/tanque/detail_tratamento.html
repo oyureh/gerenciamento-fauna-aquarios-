@@ -1,0 +1,90 @@
+{% extends "partials/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+    <div class="page-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-2">
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'animais:detail_tanque' tratamento.tanque.pk %}">
+                            Tanque: {{ tratamento.tanque.nome }}
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active text-muted">
+                        Histórico de Tratamento
+                    </li>
+                </ol>
+            </nav>
+            <h1>{{ tratamento.titulo }}</h1>
+            <p class="text-muted mb-0">
+                Registrado em: {{ tratamento.data_criacao|date:"d/m/Y H:i" }}
+            </p>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a href="{% url 'animais:detail_tanque' tratamento.tanque.pk %}" class="btn btn-light border">
+                Voltar ao Tanque
+            </a>
+        </div>
+    </div>
+
+    <div class="detail-grid">
+        <div class="info-card">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="mb-0">Informações Técnicas</h4>
+                
+                {% if tratamento.status == 'fechada' %}
+                    <span class="status-pill pill-dead">Procedimento Encerrado</span>
+                {% else %}
+                    <span class="status-pill pill-alive">Em Andamento</span>
+                {% endif %}
+            </div>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">Tipo de Manejo</span>
+                    <span class="info-value">{{ tratamento.tipo.nome }}</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">Responsável</span>
+                    <span class="info-value">{{ tratamento.responsavel|default:"Não especificado" }}</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">Data de Execução</span>
+                    <span class="info-value">{{ tratamento.data_tratamento|date:"d/m/Y" }}</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">Última Atualização</span>
+                    <span class="info-value">{{ tratamento.data_atualizacao|date:"d/m/Y H:i" }}</span>
+                </div>
+            </div>
+
+            {% if tratamento.status != 'fechada' %}
+            <div class="d-flex justify-content-end mt-4">
+                <a href="{% url 'ficha_clinica:update_tratamento' pk=tratamento.pk %}" class="btn btn-outline-primary">
+                    Editar Registro
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="observations-card mt-4">
+        <h5>Descrição Detalhada do Procedimento</h5>
+        <div class="text-secondary mb-0">
+            {{ tratamento.descricao|safe }}
+        </div>
+    </div>
+
+</div>
+{% endblock %}
